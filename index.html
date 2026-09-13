@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>عشّي — دفتر الطيور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBF6EA;
+    --surface:#FFFFFF;
+    --surface-2:#F3ECD8;
+    --ink:#23301F;
+    --ink-soft:#5B6754;
+    --forest:#2F4A34;
+    --forest-2:#3E5F45;
+    --moss:#6B8A5A;
+    --clay:#B0592D;
+    --gold:#D9A441;
+    --sky:#3F7E86;
+    --rose:#C4634F;
+    --line:#E4DAC0;
+    --shadow: 0 2px 10px rgba(47,74,52,0.08), 0 1px 2px rgba(47,74,52,0.06);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Cairo',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Lalezar',sans-serif;
+    font-weight:400;
+    letter-spacing:.3px;
+    color:var(--forest);
+  }
+  #app{
+    max-width:640px;
+    margin:0 auto;
+    padding:16px 16px 96px;
+    min-height:100vh;
+  }
+  @media(min-width:860px){
+    #app{max-width:760px;padding:28px 28px 40px;}
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  input,select,textarea{font-family:inherit;}
+
+  /* ===== top bar ===== */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 2px 18px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:42px;height:42px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #EADFAF, var(--gold) 65%, var(--clay) 100%);
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+    box-shadow:var(--shadow);
+  }
+  .brand h1{font-size:26px;margin:0;line-height:1;}
+  .brand span{display:block;font-size:11px;color:var(--ink-soft);font-family:'Cairo';margin-top:2px;}
+  .icon-btn{
+    width:40px;height:40px;border-radius:50%;background:var(--surface);
+    display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--shadow);
+  }
+  .back-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .back-btn{
+    width:36px;height:36px;border-radius:50%;background:var(--surface);
+    display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:var(--shadow);
+    flex-shrink:0;
+  }
+  .back-row h2{margin:0;font-size:22px;}
+  .back-row .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+
+  /* ===== cards / sections ===== */
+  .card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .section-title{
+    font-family:'Lalezar';font-size:19px;color:var(--forest);
+    margin:22px 0 10px;display:flex;align-items:center;gap:8px;
+  }
+  .section-title:first-child{margin-top:0;}
+  .empty-note{
+    color:var(--ink-soft);font-size:13.5px;background:var(--surface-2);
+    border-radius:14px;padding:16px;text-align:center;line-height:1.9;
+  }
+
+  /* ===== today tasks ===== */
+  .task-banner{
+    background:linear-gradient(135deg, var(--forest), var(--forest-2));
+    border-radius:var(--radius);color:#fff;padding:16px 16px;margin-bottom:18px;
+    box-shadow:var(--shadow);
+  }
+  .task-banner h3{color:#F3ECD8;font-size:19px;margin:0 0 8px;font-family:'Lalezar';}
+  .task-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-top:8px;
+    font-size:13.5px;
+  }
+  .task-item b{font-family:'Cairo';font-weight:700;}
+  .task-item button{
+    background:var(--gold);color:#2b1c05;padding:6px 12px;border-radius:20px;font-size:12.5px;font-weight:700;flex-shrink:0;
+  }
+
+  /* ===== stat row ===== */
+  .stat-row{display:flex;gap:10px;margin-bottom:18px;}
+  .stat{
+    flex:1;background:var(--surface);border-radius:16px;box-shadow:var(--shadow);
+    padding:14px 8px;text-align:center;
+  }
+  .stat b{display:block;font-family:'Lalezar';font-size:24px;color:var(--clay);}
+  .stat span{font-size:11.5px;color:var(--ink-soft);}
+
+  /* ===== species grid ===== */
+  .species-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .species-card{
+    background:var(--surface);border-radius:18px;box-shadow:var(--shadow);
+    padding:16px 12px;text-align:center;position:relative;overflow:hidden;
+  }
+  .species-card .emoji{font-size:34px;display:block;margin-bottom:6px;}
+  .species-card b{font-family:'Lalezar';font-size:17px;color:var(--forest);display:block;}
+  .species-card span{font-size:11.5px;color:var(--ink-soft);}
+  .species-card::after{
+    content:"";position:absolute;inset:0;border-radius:18px;
+    border:1.5px solid var(--line);pointer-events:none;
+  }
+
+  /* ===== buttons ===== */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    padding:12px 18px;border-radius:26px;font-weight:700;font-size:14.5px;
+    box-shadow:var(--shadow);
+  }
+  .btn-primary{background:var(--forest);color:#fff;}
+  .btn-gold{background:var(--gold);color:#2b1c05;}
+  .btn-sky{background:var(--sky);color:#fff;}
+  .btn-clay{background:var(--clay);color:#fff;}
+  .btn-outline{background:var(--surface);color:var(--forest);border:1.5px solid var(--line);box-shadow:none;}
+  .btn-block{width:100%;}
+  .btn-sm{padding:8px 14px;font-size:12.5px;border-radius:20px;}
+  .btn-danger{background:#fff;color:var(--clay);border:1.5px solid var(--clay);box-shadow:none;}
+  .fab{
+    position:fixed;bottom:84px;left:50%;transform:translateX(-50%);
+    z-index:40;
+  }
+  @media(min-width:860px){.fab{position:static;transform:none;margin-top:10px;}}
+
+  /* ===== bottom nav ===== */
+  .bottom-nav{
+    position:fixed;bottom:0;left:0;right:0;z-index:50;
+    background:var(--surface);border-top:1px solid var(--line);
+    display:flex;padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+    box-shadow:0 -4px 14px rgba(47,74,52,.08);
+  }
+  @media(min-width:860px){.bottom-nav{display:none;}}
+  .nav-item{flex:1;text-align:center;padding:6px 0;font-size:11px;color:var(--ink-soft);}
+  .nav-item .ic{font-size:20px;display:block;margin-bottom:2px;}
+  .nav-item.active{color:var(--forest);font-weight:800;}
+
+  /* ===== pair card ===== */
+  .pair-card{
+    background:var(--surface);border-radius:18px;box-shadow:var(--shadow);
+    padding:14px;margin-bottom:12px;display:flex;gap:12px;align-items:center;
+  }
+  .pair-photos{display:flex;flex-shrink:0;}
+  .pair-photo{
+    width:52px;height:52px;border-radius:50%;object-fit:cover;
+    border:2.5px solid var(--surface);box-shadow:var(--shadow);background:var(--surface-2);
+  }
+  .pair-photo.two{margin-right:-16px;}
+  .pair-photo-ph{
+    width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:20px;background:var(--surface-2);border:2.5px solid var(--surface);
+  }
+  .pair-info{flex:1;min-width:0;}
+  .pair-info b{font-family:'Lalezar';font-size:17px;color:var(--forest);display:block;}
+  .pair-info .names{font-size:12px;color:var(--ink-soft);}
+  .state-badge{
+    display:inline-block;margin-top:5px;font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px;color:#fff;
+  }
+
+  /* ===== nest ring (egg progress) ===== */
+  .nest-ring{position:relative;width:44px;height:44px;flex-shrink:0;}
+  .nest-ring svg{transform:rotate(-90deg);}
+  .nest-ring .cnt{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;color:var(--forest);font-family:'Cairo';
+  }
+
+  /* ===== bird chip ===== */
+  .bird-row{
+    display:flex;align-items:center;gap:12px;background:var(--surface);
+    border-radius:16px;box-shadow:var(--shadow);padding:10px 12px;margin-bottom:10px;
+  }
+  .bird-photo{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--surface-2);flex-shrink:0;}
+  .bird-photo-ph{width:44px;height:44px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .bird-row b{font-family:'Cairo';font-weight:700;font-size:14.5px;}
+  .bird-row .meta{font-size:11.5px;color:var(--ink-soft);}
+  .gender-tag{font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:700;}
+  .gender-m{background:#DCEBEF;color:var(--sky);}
+  .gender-f{background:#F6DEDA;color:var(--rose);}
+  .gender-u{background:var(--surface-2);color:var(--ink-soft);}
+
+  /* ===== pair detail hero ===== */
+  .pair-hero{
+    background:linear-gradient(160deg, var(--surface-2), var(--surface));
+    border-radius:22px;box-shadow:var(--shadow);padding:22px 16px;text-align:center;margin-bottom:16px;
+  }
+  .hero-photos{display:flex;justify-content:center;margin-bottom:10px;}
+  .hero-photo{
+    width:74px;height:74px;border-radius:50%;object-fit:cover;border:3px solid var(--surface);
+    box-shadow:var(--shadow);background:var(--surface-2);
+  }
+  .hero-photo.two{margin-right:-20px;}
+  .hero-photo-ph{
+    width:74px;height:74px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;
+    font-size:28px;border:3px solid var(--surface);
+  }
+  .pair-hero h2{font-size:26px;margin:4px 0 2px;}
+  .pair-hero .names{font-size:13px;color:var(--ink-soft);margin-bottom:8px;}
+
+  .action-panel{
+    border-radius:18px;padding:16px;margin-bottom:14px;color:#fff;
+  }
+  .action-panel h4{font-family:'Lalezar';font-size:18px;margin:0 0 6px;}
+  .action-panel p{font-size:13px;line-height:1.8;margin:0 0 12px;opacity:.95;}
+  .egg-dots{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap;}
+  .egg-dot{width:22px;height:26px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:rgba(255,255,255,.9);}
+  .countdown-ring-wrap{display:flex;align-items:center;gap:14px;margin:8px 0;}
+  .countdown-num{font-family:'Lalezar';font-size:34px;}
+  .action-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+  .log-list{font-size:12.5px;}
+  .log-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);}
+  .log-row:last-child{border-bottom:none;}
+
+  /* ===== form ===== */
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--forest);margin-bottom:6px;}
+  .field input[type=text],.field input[type=number],.field input[type=date],.field select,.field textarea{
+    width:100%;padding:11px 13px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);
+    font-size:14px;color:var(--ink);
+  }
+  .field textarea{resize:vertical;min-height:60px;}
+  .seg{display:flex;gap:8px;}
+  .seg button{
+    flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);font-size:13px;font-weight:700;
+  }
+  .seg button.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .photo-upload{
+    display:flex;align-items:center;gap:12px;background:var(--surface-2);border-radius:14px;padding:10px;margin-bottom:14px;
+  }
+  .photo-upload img{width:56px;height:56px;border-radius:50%;object-fit:cover;}
+  .photo-upload .ph{width:56px;height:56px;border-radius:50%;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;}
+
+  /* ===== modal ===== */
+  .overlay{
+    position:fixed;inset:0;background:rgba(35,48,31,.45);z-index:100;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  @media(min-width:860px){.overlay{align-items:center;}}
+  .modal{
+    background:var(--bg);width:100%;max-width:520px;border-radius:24px 24px 0 0;
+    padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;
+    animation:up .22s ease;
+  }
+  @media(min-width:860px){.modal{border-radius:24px;max-height:80vh;}}
+  @keyframes up{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .modal-head h3{margin:0;font-size:21px;}
+  .modal-close{width:34px;height:34px;border-radius:50%;background:var(--surface-2);font-size:16px;}
+
+  /* ===== tree ===== */
+  .tree-wrap{overflow-x:auto;padding:10px 4px 4px;}
+  .tree-node{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+  .tree-pair-box{
+    display:flex;align-items:center;gap:2px;background:var(--surface);border-radius:16px;
+    box-shadow:var(--shadow);padding:8px 10px;border:1.5px solid var(--line);
+  }
+  .tree-mini-photo{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--surface-2);}
+  .tree-mini-photo-ph{width:36px;height:36px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .tree-plus{color:var(--clay);font-weight:800;font-size:13px;margin:0 2px;}
+  .tree-children{display:flex;gap:22px;position:relative;padding-top:22px;margin-top:4px;}
+  .tree-branch{
+    position:relative;display:flex;flex-direction:column;align-items:center;
+  }
+  .tree-branch::before{
+    content:"";position:absolute;top:-22px;right:50%;width:2px;height:22px;background:var(--moss);
+  }
+  .tree-children::after{
+    content:"";position:absolute;top:0;right:calc(50% / var(--n,1));left:calc(50% / var(--n,1));height:2px;background:var(--moss);
+  }
+  .tree-child-card{
+    background:var(--surface);border-radius:14px;box-shadow:var(--shadow);padding:6px 10px;
+    display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);
+  }
+  .tree-child-card span.nm{font-size:12px;font-weight:700;}
+  .tree-child-card.leaf{opacity:.9;}
+
+  /* fade in */
+  .view-fade{animation:fadein .18s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .link-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);border-radius:12px;padding:10px 12px;margin-top:6px;font-size:13px;}
+  .toast{
+    position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
+    background:var(--forest);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:200;
+    box-shadow:var(--shadow); animation:fadein .2s ease;
+  }
+
+  /* ===== quail / production dashboard ===== */
+  .quail-hero{
+    background:linear-gradient(160deg,#F3ECD8,#FFF);border-radius:22px;box-shadow:var(--shadow);
+    padding:26px 16px;text-align:center;margin-bottom:16px;
+  }
+  .quail-hero .big-num{font-family:'Lalezar';font-size:52px;color:var(--clay);line-height:1;}
+  .quail-hero .lbl{font-size:13px;color:var(--ink-soft);margin-top:4px;}
+  .quail-stat-row{display:flex;gap:10px;margin-bottom:16px;}
+  .quail-stat{flex:1;background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:12px 8px;text-align:center;}
+  .quail-stat b{display:block;font-family:'Lalezar';font-size:21px;color:var(--sky);}
+  .quail-stat span{font-size:11px;color:var(--ink-soft);}
+
+  /* ===== finance ===== */
+  .money-summary{display:flex;gap:10px;margin-bottom:16px;}
+  .money-card{flex:1;border-radius:16px;box-shadow:var(--shadow);padding:14px 10px;text-align:center;color:#fff;}
+  .money-card b{display:block;font-family:'Lalezar';font-size:19px;}
+  .money-card span{font-size:11px;opacity:.9;}
+  .tx-row{
+    display:flex;align-items:center;justify-content:space-between;background:var(--surface);
+    border-radius:14px;box-shadow:var(--shadow);padding:11px 13px;margin-bottom:9px;
+  }
+  .tx-cat{font-size:12.5px;color:var(--ink-soft);}
+  .tx-amt{font-family:'Cairo';font-weight:800;font-size:15px;}
+  .tx-amt.pos{color:var(--moss);}
+  .tx-amt.neg{color:var(--clay);}
+  .cat-pill{display:inline-block;background:var(--surface-2);border-radius:10px;padding:2px 9px;font-size:11px;margin:3px 4px 0 0;}
+  .cat-pill.active{background:var(--forest);color:#fff;}
+</style>
+</head>
+<body>
+<div id="app"><div style="padding:60px 0;text-align:center;color:var(--ink-soft);">جارِ التحميل…</div></div>
+
+<script>
+/* ================= STORAGE ================= */
+const DATA_KEY = 'app-data-v1';
+let DATA = { species: [], birds: [], pairs: [], transactions: [] };
+const EXPENSE_CATS = ['أكل','دواء وعلاج','شراء طيور','معدات وأدوات','مصاريف تانية'];
+const INCOME_CATS = ['بيع طيور','بيع بيض','إيراد تاني'];
+let loaded = false;
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(DATA_KEY, false);
+    if(res && res.value){ DATA = Object.assign({species:[],birds:[],pairs:[],transactions:[]}, JSON.parse(res.value)); }
+  }catch(e){ /* no data yet */ }
+  loaded = true;
+}
+let saveTimer=null;
+async function saveData(){
+  try{ await window.storage.set(DATA_KEY, JSON.stringify(DATA), false); }
+  catch(e){ console.error('save failed', e); showToast('في مشكلة في الحفظ، حاول تاني'); }
+}
+
+/* ================= HELPERS ================= */
+const uid = ()=> 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const todayStr = ()=> new Date().toISOString().slice(0,10);
+function addDays(dateStr, n){ const d=new Date(dateStr+'T00:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function daysBetween(a,b){ const d1=new Date(a+'T00:00:00'), d2=new Date(b+'T00:00:00'); return Math.round((d2-d1)/86400000); }
+function fmtDate(d){ if(!d) return '—'; const parts=d.split('-'); const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']; return `${+parts[2]} ${months[+parts[1]-1]}`; }
+function getSpecies(id){ return DATA.species.find(s=>s.id===id); }
+function getBird(id){ return DATA.birds.find(b=>b.id===id); }
+function getPair(id){ return DATA.pairs.find(p=>p.id===id); }
+function pairsOfSpecies(sid){ return DATA.pairs.filter(p=>p.speciesId===sid); }
+function unpairedBirdsOfSpecies(sid){ return DATA.birds.filter(b=>b.speciesId===sid && !b.pairId); }
+function birdsOfSpecies(sid){ return DATA.birds.filter(b=>b.speciesId===sid); }
+
+const STATE_META = {
+  rest:     {label:'في راحة',    color:'var(--moss)'},
+  production:{label:'في تزاوج',  color:'var(--clay)'},
+  laying:   {label:'بتبيض',      color:'var(--gold)'},
+  incubating:{label:'بتحضن',     color:'var(--sky)'},
+};
+function stateColor(s){ return {rest:'#6B8A5A',production:'#B0592D',laying:'#D9A441',incubating:'#3F7E86'}[s]||'#6B8A5A'; }
+
+function showToast(msg){
+  const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2200);
+}
+
+/* image resize -> base64 */
+function readAndResize(file, maxDim=360, quality=0.62){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width, h=img.height;
+        if(w>h){ if(w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; } }
+        else{ if(h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; } }
+        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror=reject;
+      img.src=e.target.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ================= ROUTER ================= */
+let ROUTE = { view:'home', params:{} };
+function go(view, params={}){ ROUTE={view,params}; window.scrollTo(0,0); render(); }
+
+/* ================= TODAY TASKS ================= */
+function getTodayTasks(){
+  const t=todayStr();
+  const tasks=[];
+  DATA.pairs.forEach(p=>{
+    if(p.state==='laying' || p.state==='production'){
+      const loggedToday = p.eggs.some(e=>e.date===t);
+      if(!loggedToday){
+        tasks.push({type:'egg', pair:p, label:`${p.name||'زوج'} — باضت النهارده؟`});
+      }
+    }
+    if(p.state==='incubating' && p.expectedHatchDate && t>=p.expectedHatchDate){
+      const loggedToday = (p.hatchLog||[]).some(h=>h.date===t);
+      if(!loggedToday){
+        tasks.push({type:'hatch', pair:p, label:`${p.name||'زوج'} — كام فرخ فقس النهارده؟`});
+      }
+    }
+  });
+  DATA.species.forEach(sp=>{
+    if(sp.type==='production'){
+      const loggedToday=(sp.eggLogs||[]).some(e=>e.date===t);
+      if(!loggedToday){ tasks.push({type:'quail', sp, label:`${sp.emoji} ${sp.name} — سجل بيض النهارده`}); }
+    }
+  });
+  return tasks;
+}
+
+/* ================= ACTIONS ================= */
+async function addSpecies(name, emoji, incubationDays, type){
+  type = type || 'breeding';
+  const sp = {id:uid(), name, emoji, type, createdAt:todayStr()};
+  if(type==='breeding'){ sp.incubationDays = +incubationDays||18; }
+  else { sp.eggLogs = []; }
+  DATA.species.push(sp);
+  await saveData();
+  return sp;
+}
+async function logQuailEgg(speciesId, count){
+  const sp=getSpecies(speciesId); const t=todayStr();
+  sp.eggLogs = sp.eggLogs||[];
+  const existing = sp.eggLogs.find(e=>e.date===t);
+  if(existing) existing.count = count; else sp.eggLogs.push({date:t, count});
+  await saveData(); render(); showToast('اتسجل بيض النهارده 🥚');
+}
+function sumEggLogsSince(sp, sinceDate){
+  return (sp.eggLogs||[]).filter(e=>e.date>=sinceDate).reduce((s,e)=>s+e.count,0);
+}
+function sumEggLogsAll(sp){ return (sp.eggLogs||[]).reduce((s,e)=>s+e.count,0); }
+async function addBird(data){
+  const b={ id:uid(), name:data.name, speciesId:data.speciesId, gender:data.gender, color:data.color||'',
+    birthDate:data.birthDate||'', price:data.price||'', notes:data.notes||'', photo:data.photo||'',
+    pairId:null, parentPairId:data.parentPairId||null, createdAt:todayStr() };
+  DATA.birds.push(b);
+  await saveData();
+  return b;
+}
+async function addPair(speciesId, name, maleId, femaleId, photo){
+  const p={ id:uid(), speciesId, name, maleId, femaleId, photo:photo||'',
+    state:'rest', eggs:[], incubationStartDate:null, expectedHatchDate:null, hatchLog:[],
+    cycleHistory:[], createdAt:todayStr() };
+  DATA.pairs.push(p);
+  if(maleId){ getBird(maleId).pairId=p.id; }
+  if(femaleId){ getBird(femaleId).pairId=p.id; }
+  await saveData();
+  return p;
+}
+async function startMating(pairId){
+  const p=getPair(pairId); p.state='production'; await saveData(); render();
+}
+async function logEgg(pairId){
+  const p=getPair(pairId); const t=todayStr();
+  if(p.eggs.some(e=>e.date===t)){ showToast('اتسجلت بيضة النهارده خلاص'); return; }
+  p.eggs.push({date:t});
+  if(p.state==='production') p.state='laying';
+  const sp=getSpecies(p.speciesId);
+  if(p.eggs.length===3 && !p.incubationStartDate){
+    p.incubationStartDate=t;
+    p.expectedHatchDate=addDays(t, sp?sp.incubationDays:18);
+    p.state='incubating';
+  }
+  await saveData(); render(); showToast('تمام، اتسجلت البيضة 🥚');
+}
+async function logHatch(pairId, count){
+  const p=getPair(pairId); const t=todayStr();
+  p.hatchLog=p.hatchLog||[];
+  const existing=p.hatchLog.find(h=>h.date===t);
+  if(existing) existing.count+=count; else p.hatchLog.push({date:t, count});
+  await saveData(); render(); showToast(`سجلنا ${count} 🐣`);
+}
+async function finishHatching(pairId){
+  const p=getPair(pairId);
+  const total=(p.hatchLog||[]).reduce((s,h)=>s+h.count,0);
+  const sp=getSpecies(p.speciesId);
+  const newIds=[];
+  for(let i=1;i<=total;i++){
+    const b=await addBirdSilent({ name:`زغلول ${i}`, speciesId:p.speciesId, gender:'u', birthDate:todayStr(), parentPairId:p.id });
+    newIds.push(b.id);
+  }
+  p.cycleHistory.push({ eggs:p.eggs.length, hatched:total, start:p.incubationStartDate, end:todayStr(), childIds:newIds });
+  p.eggs=[]; p.incubationStartDate=null; p.expectedHatchDate=null; p.hatchLog=[]; p.state='rest';
+  await saveData(); render(); showToast(total>0?`تهانينا! ${total} فرخ جديد 🎉`:'خلصنا الدورة دي');
+}
+async function addBirdSilent(data){
+  const b={ id:uid(), name:data.name, speciesId:data.speciesId, gender:data.gender||'u', color:'',
+    birthDate:data.birthDate||'', price:'', notes:'', photo:'', pairId:null, parentPairId:data.parentPairId||null, createdAt:todayStr() };
+  DATA.birds.push(b);
+  return b;
+}
+async function cancelIncubation(pairId){
+  const p=getPair(pairId);
+  p.cycleHistory.push({ eggs:p.eggs.length, hatched:0, start:p.incubationStartDate, end:todayStr(), childIds:[], failed:true });
+  p.eggs=[]; p.incubationStartDate=null; p.expectedHatchDate=null; p.hatchLog=[]; p.state='rest';
+  await saveData(); render(); showToast('اتسجلت كدورة ملهاش نتيجة، رجع الجوز يستريح');
+}
+async function setPairRest(pairId){
+  const p=getPair(pairId); p.state='rest'; await saveData(); render();
+}
+async function deletePair(pairId){
+  const p=getPair(pairId);
+  if(p.maleId && getBird(p.maleId)) getBird(p.maleId).pairId=null;
+  if(p.femaleId && getBird(p.femaleId)) getBird(p.femaleId).pairId=null;
+  DATA.pairs=DATA.pairs.filter(x=>x.id!==pairId);
+  await saveData(); go('speciesDetail',{id:p.speciesId});
+}
+async function deleteBird(birdId){
+  const b=getBird(birdId);
+  DATA.birds=DATA.birds.filter(x=>x.id!==birdId);
+  DATA.pairs.forEach(p=>{ if(p.maleId===birdId)p.maleId=null; if(p.femaleId===birdId)p.femaleId=null; });
+  await saveData(); go('speciesDetail',{id:b.speciesId});
+}
+async function updateBird(id, fields){ Object.assign(getBird(id), fields); await saveData(); }
+async function updatePair(id, fields){ Object.assign(getPair(id), fields); await saveData(); }
+async function addTransaction(type, amount, category, note, date){
+  DATA.transactions.push({id:uid(), type, amount:+amount, category, note:note||'', date:date||todayStr()});
+  await saveData();
+}
+async function deleteTransaction(id){
+  DATA.transactions = DATA.transactions.filter(t=>t.id!==id);
+  await saveData(); render();
+}
+function txSumSince(sinceDate, type){
+  return DATA.transactions.filter(t=> t.date>=sinceDate && (!type || t.type===type)).reduce((s,t)=>s+t.amount,0);
+}
+function monthStartStr(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`; }
+
+async function deleteSpecies(id){
+  const pairIds=pairsOfSpecies(id).map(p=>p.id);
+  DATA.pairs=DATA.pairs.filter(p=>p.speciesId!==id);
+  DATA.birds=DATA.birds.filter(b=>b.speciesId!==id);
+  DATA.species=DATA.species.filter(s=>s.id!==id);
+  await saveData(); go('speciesList');
+}
+
+/* ================= MODAL SYSTEM ================= */
+function openModal(html){
+  closeModal();
+  const ov=document.createElement('div');
+  ov.className='overlay'; ov.id='modalOverlay';
+  ov.innerHTML = `<div class="modal">${html}</div>`;
+  ov.addEventListener('click', (e)=>{ if(e.target===ov) closeModal(); });
+  document.body.appendChild(ov);
+}
+function closeModal(){ const ov=document.getElementById('modalOverlay'); if(ov) ov.remove(); }
+
+function modalAddSpecies(){
+  openModal(`
+    <div class="modal-head"><h3>إضافة نوع جديد</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>اسم النوع</label><input type="text" id="spName" placeholder="مثلاً: كناري, حمام, بادجي, سمان..."></div>
+    <div class="field"><label>إيموجي يمثله (اختياري)</label><input type="text" id="spEmoji" placeholder="🐤" maxlength="2"></div>
+    <div class="field"><label>نوع المتابعة</label>
+      <div class="seg" id="spTypeSeg">
+        <button type="button" class="active" data-v="breeding" onclick="segPick('spTypeSeg',this);toggleIncField();">تربية وفقس</button>
+        <button type="button" data-v="production" onclick="segPick('spTypeSeg',this);toggleIncField();">إنتاج بيض للأكل</button>
+      </div>
+      <div style="font-size:11.5px;color:var(--ink-soft);margin-top:6px;">
+        "تربية وفقس" لو هتتابع أزواج وشجرة عيلة (زي حمام/بادجي/زيبرا). "إنتاج بيض للأكل" لو بس بتلم بيض كل يوم من القفص (زي السمان).
+      </div>
+    </div>
+    <div class="field" id="spIncWrap"><label>مدة الحضانة بالأيام (من تالت بيضة لحد الفقس)</label><input type="number" id="spInc" value="18"></div>
+    <button class="btn btn-primary btn-block" onclick="submitAddSpecies()">حفظ النوع</button>
+  `);
+}
+function toggleIncField(){
+  const type=document.getElementById('spTypeSeg').querySelector('.active').dataset.v;
+  document.getElementById('spIncWrap').style.display = type==='production' ? 'none' : 'block';
+}
+async function submitAddSpecies(){
+  const name=document.getElementById('spName').value.trim();
+  if(!name){ showToast('اكتب اسم النوع الأول'); return; }
+  const emoji=document.getElementById('spEmoji').value.trim()||'🐦';
+  const type=document.getElementById('spTypeSeg').querySelector('.active').dataset.v;
+  const inc=document.getElementById('spInc').value;
+  const sp=await addSpecies(name, emoji, inc, type);
+  closeModal(); go('speciesDetail',{id:sp.id});
+}
+
+function modalAddBird(speciesId, parentPairId=null){
+  openModal(`
+    <div class="modal-head"><h3>إضافة طائر</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="photo-upload">
+      <div class="ph" id="birdPhotoPh">🐦</div>
+      <div style="flex:1">
+        <input type="file" accept="image/*" id="birdPhotoInput" onchange="previewPhoto('birdPhotoInput','birdPhotoPh')">
+        <div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">صورة الطائر (اختياري)</div>
+      </div>
+    </div>
+    <div class="field"><label>الاسم</label><input type="text" id="bName" placeholder="اسم الطائر"></div>
+    <div class="field"><label>النوع/الجنس</label>
+      <div class="seg" id="bGenderSeg">
+        <button type="button" class="active" data-v="m" onclick="segPick('bGenderSeg',this)">ذكر</button>
+        <button type="button" data-v="f" onclick="segPick('bGenderSeg',this)">أنثى</button>
+        <button type="button" data-v="u" onclick="segPick('bGenderSeg',this)">مش متأكد</button>
+      </div>
+    </div>
+    <div class="field"><label>اللون / الطفرة</label><input type="text" id="bColor" placeholder="مثلاً: أصفر, أخضر أوبالين, بايد..."></div>
+    <div class="field"><label>تاريخ الميلاد/الشراء</label><input type="date" id="bDate" value="${todayStr()}"></div>
+    <div class="field"><label>السعر (اختياري)</label><input type="number" id="bPrice" placeholder="جنيه"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="bNotes" placeholder="أي حاجة تحب تفتكرها"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="submitAddBird('${speciesId}', ${parentPairId?`'${parentPairId}'`:null})">حفظ الطائر</button>
+  `);
+}
+function segPick(segId, btn){
+  document.getElementById(segId).querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+async function previewPhoto(inputId, phId){
+  const input=document.getElementById(inputId);
+  const file=input.files[0]; if(!file) return;
+  const dataUrl=await readAndResize(file);
+  input.dataset.photo=dataUrl;
+  document.getElementById(phId).outerHTML=`<img src="${dataUrl}" id="${phId}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;">`;
+}
+async function submitAddBird(speciesId, parentPairId){
+  const name=document.getElementById('bName').value.trim()||'طائر بدون اسم';
+  const gender=document.getElementById('bGenderSeg').querySelector('.active').dataset.v;
+  const color=document.getElementById('bColor').value.trim();
+  const birthDate=document.getElementById('bDate').value;
+  const price=document.getElementById('bPrice').value;
+  const notes=document.getElementById('bNotes').value.trim();
+  const photo=document.getElementById('birdPhotoInput').dataset.photo||'';
+  await addBird({name,speciesId,gender,color,birthDate,price,notes,photo,parentPairId});
+  closeModal(); go('speciesDetail',{id:speciesId, tab:'birds'});
+}
+
+function modalAddPair(speciesId){
+  const males=unpairedBirdsOfSpecies(speciesId).filter(b=>b.gender!=='f');
+  const females=unpairedBirdsOfSpecies(speciesId).filter(b=>b.gender!=='m');
+  openModal(`
+    <div class="modal-head"><h3>تكوين جوز جديد</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>اسم الجوز (اختياري)</label><input type="text" id="pName" placeholder="مثلاً: جوز الشرفة"></div>
+    <div class="field"><label>الذكر</label>
+      <select id="pMale">
+        <option value="">— اختار طائر —</option>
+        ${males.map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
+      </select>
+      <div style="margin-top:6px;"><button class="btn btn-outline btn-sm" type="button" onclick="closeModal();modalAddBird('${speciesId}');">+ إضافة طائر جديد كذكر</button></div>
+    </div>
+    <div class="field"><label>الأنثى</label>
+      <select id="pFemale">
+        <option value="">— اختاري طائر —</option>
+        ${females.map(f=>`<option value="${f.id}">${f.name}</option>`).join('')}
+      </select>
+      <div style="margin-top:6px;"><button class="btn btn-outline btn-sm" type="button" onclick="closeModal();modalAddBird('${speciesId}');">+ إضافة طائر جديد كأنثى</button></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="submitAddPair('${speciesId}')">حفظ الجوز</button>
+  `);
+}
+async function submitAddPair(speciesId){
+  const name=document.getElementById('pName').value.trim();
+  const maleId=document.getElementById('pMale').value||null;
+  const femaleId=document.getElementById('pFemale').value||null;
+  if(!maleId && !femaleId){ showToast('اختار طائر واحد على الأقل'); return; }
+  const p=await addPair(speciesId, name, maleId, femaleId);
+  closeModal(); go('pairDetail',{id:p.id});
+}
+
+function modalLogHatch(pairId){
+  openModal(`
+    <div class="modal-head"><h3>كام فرخ فقس النهارده؟</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>العدد</label><input type="number" id="hatchCount" min="0" value="1"></div>
+    <button class="btn btn-sky btn-block" onclick="submitLogHatch('${pairId}')">تسجيل</button>
+  `);
+}
+async function submitLogHatch(pairId){
+  const c=+document.getElementById('hatchCount').value||0;
+  closeModal();
+  if(c>0) await logHatch(pairId, c);
+}
+
+function modalEditBird(id){
+  const b=getBird(id);
+  openModal(`
+    <div class="modal-head"><h3>تعديل بيانات الطائر</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>الاسم</label><input type="text" id="ebName" value="${b.name}"></div>
+    <div class="field"><label>النوع/الجنس</label>
+      <div class="seg" id="ebGenderSeg">
+        <button type="button" class="${b.gender==='m'?'active':''}" data-v="m" onclick="segPick('ebGenderSeg',this)">ذكر</button>
+        <button type="button" class="${b.gender==='f'?'active':''}" data-v="f" onclick="segPick('ebGenderSeg',this)">أنثى</button>
+        <button type="button" class="${b.gender==='u'?'active':''}" data-v="u" onclick="segPick('ebGenderSeg',this)">مش متأكد</button>
+      </div>
+    </div>
+    <div class="field"><label>اللون / الطفرة</label><input type="text" id="ebColor" value="${b.color||''}"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="ebNotes">${b.notes||''}</textarea></div>
+    <button class="btn btn-primary btn-block" onclick="submitEditBird('${id}')">حفظ التعديل</button>
+    <button class="btn btn-danger btn-block" style="margin-top:8px;" onclick="if(confirm('متأكد من حذف الطائر؟')){deleteBird('${id}');closeModal();}">حذف الطائر</button>
+  `);
+}
+async function submitEditBird(id){
+  const name=document.getElementById('ebName').value.trim();
+  const gender=document.getElementById('ebGenderSeg').querySelector('.active').dataset.v;
+  const color=document.getElementById('ebColor').value.trim();
+  const notes=document.getElementById('ebNotes').value.trim();
+  await updateBird(id,{name,gender,color,notes});
+  closeModal(); render();
+}
+
+/* ================= RENDER: HOME ================= */
+function renderHome(){
+  const tasks=getTodayTasks();
+  const totalBirds=DATA.birds.length, totalPairs=DATA.pairs.length, totalSpecies=DATA.species.length;
+  return `
+  <div class="view-fade">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">🪺</div>
+        <div><h1>عشّي</h1><span>دفتر متابعة الطيور بتاعتك</span></div>
+      </div>
+    </div>
+
+    ${tasks.length? `
+    <div class="task-banner">
+      <h3>مهام النهارده 🌤️</h3>
+      ${tasks.map(t=>`
+        <div class="task-item">
+          <span>${t.label}</span>
+          ${t.type==='egg' ? `<button onclick="quickEggAnswer('${t.pair.id}')">جاوب</button>`
+            : t.type==='quail' ? `<button onclick="modalLogQuail('${t.sp.id}', 0)">سجل</button>`
+            : `<button onclick="go('pairDetail',{id:'${t.pair.id}'})">سجل</button>`}
+        </div>`).join('')}
+    </div>` : `
+    <div class="task-banner" style="background:linear-gradient(135deg,#6B8A5A,#3E5F45)">
+      <h3>مفيش مهام النهارده 🌿</h3>
+      <div style="font-size:13px;opacity:.9;">كل الأزواج تمام، تقدر تتفرج على الأنواع بتاعتك.</div>
+    </div>`}
+
+    <div class="stat-row">
+      <div class="stat"><b>${totalSpecies}</b><span>أنواع</span></div>
+      <div class="stat"><b>${totalPairs}</b><span>أزواج</span></div>
+      <div class="stat"><b>${totalBirds}</b><span>طيور</span></div>
+    </div>
+
+    <button class="money-summary" style="all:unset;display:flex;gap:10px;margin-bottom:18px;width:100%;cursor:pointer;" onclick="go('finance')">
+      <div class="money-card" style="background:linear-gradient(135deg,#6B8A5A,#4E6B44);flex:1;"><b>${txSumSince(monthStartStr(),'income')} ج.م</b><span>إيرادات الشهر</span></div>
+      <div class="money-card" style="background:linear-gradient(135deg,#C4634F,#A24435);flex:1;"><b>${txSumSince(monthStartStr(),'expense')} ج.م</b><span>مصاريف الشهر</span></div>
+    </button>
+
+    <div class="section-title">🐦 الأنواع بتاعتك</div>
+    ${renderSpeciesGrid(true)}
+  </div>`;
+}
+async function quickEggAnswer(pairId){
+  await logEgg(pairId);
+}
+
+function renderSpeciesGrid(limit){
+  let list=DATA.species;
+  if(!list.length) return `<div class="empty-note">لسه مفيش أنواع مضافة. دوس على "+" تحت عشان تبدأ.</div>`;
+  if(limit) list=list.slice(0,6);
+  return `<div class="species-grid">
+    ${list.map(s=>`
+      <button class="species-card" onclick="go('speciesDetail',{id:'${s.id}'})">
+        <span class="emoji">${s.emoji}</span>
+        <b>${s.name}</b>
+        <span>${s.type==='production' ? `${sumEggLogsSince(s, addDays(todayStr(),-6))} بيضة/أسبوع` : `${pairsOfSpecies(s.id).length} جوز · ${birdsOfSpecies(s.id).length} طائر`}</span>
+      </button>`).join('')}
+  </div>`;
+}
+
+/* ================= RENDER: SPECIES LIST ================= */
+function renderSpeciesList(){
+  return `
+  <div class="view-fade">
+    <div class="back-row">
+      <button class="back-btn" onclick="go('home')">→</button>
+      <div><h2>كل الأنواع</h2></div>
+    </div>
+    ${renderSpeciesGrid(false)}
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="modalAddSpecies()">+ إضافة نوع جديد</button>
+  </div>`;
+}
+
+/* ================= RENDER: SPECIES DETAIL ================= */
+function renderSpeciesDetail(id, tab){
+  const sp=getSpecies(id);
+  if(!sp) return `<div class="empty-note">النوع ده مش موجود</div>`;
+  if(sp.type==='production') return renderProductionSpecies(sp);
+
+  tab = tab || 'pairs';
+  const pairs=pairsOfSpecies(id);
+  const unpaired=unpairedBirdsOfSpecies(id);
+  return `
+  <div class="view-fade">
+    <div class="back-row">
+      <button class="back-btn" onclick="go('speciesList')">→</button>
+      <div><h2>${sp.emoji} ${sp.name}</h2><div class="sub">مدة الحضانة: ${sp.incubationDays} يوم</div></div>
+    </div>
+
+    <div class="seg" style="margin-bottom:16px;">
+      <button class="${tab==='pairs'?'active':''}" onclick="go('speciesDetail',{id:'${id}',tab:'pairs'})">الأزواج (${pairs.length})</button>
+      <button class="${tab==='birds'?'active':''}" onclick="go('speciesDetail',{id:'${id}',tab:'birds'})">الطيور الفردية (${unpaired.length})</button>
+    </div>
+
+    ${tab==='pairs' ? `
+      ${pairs.length? pairs.map(renderPairCard).join('') : `<div class="empty-note">لسه مفيش أزواج في النوع ده.</div>`}
+      <button class="btn btn-primary btn-block" onclick="modalAddPair('${id}')">+ تكوين جوز جديد</button>
+    ` : `
+      ${unpaired.length? unpaired.map(renderBirdRow).join('') : `<div class="empty-note">مفيش طيور فردية دلوقتي.</div>`}
+      <button class="btn btn-primary btn-block" onclick="modalAddBird('${id}')">+ إضافة طائر</button>
+    `}
+
+    <button class="btn btn-danger btn-block" style="margin-top:22px;" onclick="if(confirm('حذف النوع ده هيمسح كل أزواجه وطيوره، متأكد؟')){deleteSpecies('${id}')}">حذف النوع ده</button>
+  </div>`;
+}
+
+function renderProductionSpecies(sp){
+  const t=todayStr();
+  const todayEntry=(sp.eggLogs||[]).find(e=>e.date===t);
+  const todayCount = todayEntry? todayEntry.count : 0;
+  const weekAgo = addDays(t,-6);
+  const weekTotal = sumEggLogsSince(sp, weekAgo);
+  const monthTotal = sumEggLogsSince(sp, monthStartStr());
+  const allTotal = sumEggLogsAll(sp);
+  const history = (sp.eggLogs||[]).slice().reverse().slice(0,14);
+  return `
+  <div class="view-fade">
+    <div class="back-row">
+      <button class="back-btn" onclick="go('speciesList')">→</button>
+      <div><h2>${sp.emoji} ${sp.name}</h2><div class="sub">إنتاج بيض يومي</div></div>
+    </div>
+
+    <div class="quail-hero">
+      <div class="big-num">${todayCount}</div>
+      <div class="lbl">بيضة اتجمعت النهارده</div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-gold" onclick="modalLogQuail('${sp.id}', ${todayCount})">${todayEntry? 'تعديل عدد النهارده':'سجل بيض النهارده'}</button>
+      </div>
+    </div>
+
+    <div class="quail-stat-row">
+      <div class="quail-stat"><b>${weekTotal}</b><span>آخر 7 أيام</span></div>
+      <div class="quail-stat"><b>${monthTotal}</b><span>الشهر ده</span></div>
+      <div class="quail-stat"><b>${allTotal}</b><span>إجمالي كل الوقت</span></div>
+    </div>
+
+    <div class="section-title">📋 سجل الأيام اللي فاتت</div>
+    ${history.length? `<div class="card"><div class="log-list">${history.map(e=>`<div class="log-row"><span>${fmtDate(e.date)}</span><span>${e.count} بيضة</span></div>`).join('')}</div></div>` : `<div class="empty-note">لسه مفيش بيض متسجل.</div>`}
+
+    <button class="btn btn-danger btn-block" style="margin-top:22px;" onclick="if(confirm('حذف النوع ده هيمسح كل سجل البيض بتاعه، متأكد؟')){deleteSpecies('${sp.id}')}">حذف النوع ده</button>
+  </div>`;
+}
+function modalLogQuail(speciesId, current){
+  openModal(`
+    <div class="modal-head"><h3>بيض النهارده</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>عدد البيض اللي اتجمع النهارده</label><input type="number" id="quailCount" min="0" value="${current}"></div>
+    <button class="btn btn-gold btn-block" onclick="submitLogQuail('${speciesId}')">حفظ</button>
+  `);
+}
+async function submitLogQuail(speciesId){
+  const c=+document.getElementById('quailCount').value||0;
+  closeModal();
+  await logQuailEgg(speciesId, c);
+}
+
+function renderPairCard(p){
+  const male=p.maleId?getBird(p.maleId):null, female=p.femaleId?getBird(p.femaleId):null;
+  const meta=STATE_META[p.state]||STATE_META.rest;
+  const eggCount=p.eggs.length;
+  return `
+  <button class="pair-card" onclick="go('pairDetail',{id:'${p.id}'})" style="width:100%;text-align:right;">
+    <div class="pair-photos">
+      ${male ? (male.photo?`<img class="pair-photo two" src="${male.photo}">`:`<div class="pair-photo-ph two" style="margin-right:-16px;">♂️</div>`) : ''}
+      ${female ? (female.photo?`<img class="pair-photo" src="${female.photo}">`:`<div class="pair-photo-ph">♀️</div>`) : ''}
+    </div>
+    <div class="pair-info">
+      <b>${p.name || (male&&female? male.name+' و '+female.name : (male?male.name:female?female.name:'جوز'))}</b>
+      <div class="names">${male?male.name:'—'} × ${female?female.name:'—'}</div>
+      <span class="state-badge" style="background:${meta.color}">${meta.label}</span>
+    </div>
+    ${(p.state==='laying'||p.state==='incubating') ? `
+    <div class="nest-ring">
+      <svg width="44" height="44"><circle cx="22" cy="22" r="18" fill="none" stroke="#F0E9D8" stroke-width="5"/>
+      <circle cx="22" cy="22" r="18" fill="none" stroke="${meta.color}" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="${Math.min(eggCount,3)/3*113} 113"/></svg>
+      <div class="cnt">${eggCount}</div>
+    </div>` : ''}
+  </button>`;
+}
+
+function renderBirdRow(b){
+  const gt = b.gender==='m'?'<span class="gender-tag gender-m">ذكر ♂</span>':b.gender==='f'?'<span class="gender-tag gender-f">أنثى ♀</span>':'<span class="gender-tag gender-u">؟</span>';
+  return `
+  <button class="bird-row" style="width:100%;text-align:right;" onclick="go('birdDetail',{id:'${b.id}'})">
+    ${b.photo?`<img class="bird-photo" src="${b.photo}">`:`<div class="bird-photo-ph">🐦</div>`}
+    <div style="flex:1;">
+      <b>${b.name}</b>
+      <div class="meta">${b.color||''} ${b.birthDate?'· '+fmtDate(b.birthDate):''}</div>
+    </div>
+    ${gt}
+  </button>`;
+}
+
+/* ================= RENDER: PAIR DETAIL ================= */
+function renderPairDetail(id){
+  const p=getPair(id);
+  if(!p) return `<div class="empty-note">الجوز ده مش موجود</div>`;
+  const sp=getSpecies(p.speciesId);
+  const male=p.maleId?getBird(p.maleId):null, female=p.femaleId?getBird(p.femaleId):null;
+  const meta=STATE_META[p.state]||STATE_META.rest;
+  const t=todayStr();
+
+  let actionHtml='';
+  if(p.state==='rest'){
+    actionHtml=`
+    <div class="action-panel" style="background:linear-gradient(135deg,#6B8A5A,#556F49)">
+      <h4>في راحة 🌿</h4>
+      <p>الجوز مرتاح دلوقتي. لو بدأ التزاوج، سجّل كده تقدر تتابع البيض بعد كده.</p>
+      <button class="btn btn-gold" onclick="startMating('${p.id}')">بدأ التزاوج ✨</button>
+    </div>`;
+  } else if(p.state==='production'){
+    actionHtml=`
+    <div class="action-panel" style="background:linear-gradient(135deg,#B0592D,#8B4020)">
+      <h4>في تزاوج 🐦‍⬛</h4>
+      <p>لسه ملحقتش تبيض. أول ما تلاحظ بيضة، سجّلها هنا.</p>
+      <button class="btn btn-gold" onclick="logEgg('${p.id}')">باضت بيضة النهارده 🥚</button>
+    </div>`;
+  } else if(p.state==='laying'){
+    const loggedToday=p.eggs.some(e=>e.date===t);
+    actionHtml=`
+    <div class="action-panel" style="background:linear-gradient(135deg,#D9A441,#B98527)">
+      <h4>بتبيض 🥚 (${p.eggs.length} من 3)</h4>
+      <p>لما توصل لتالت بيضة، الحضانة هتبدأ تلقائي وهنحسبلك معاد الفقس على مدة حضانة ${sp?sp.incubationDays:18} يوم.</p>
+      <div class="egg-dots">${Array.from({length:3}).map((_,i)=>`<div class="egg-dot" style="opacity:${i<p.eggs.length?1:.35}"></div>`).join('')}</div>
+      <div class="action-row">
+        <button class="btn ${loggedToday?'btn-outline':'btn-primary'}" style="${loggedToday?'':'background:#fff;color:#B98527;'}" ${loggedToday?'disabled':''} onclick="logEgg('${p.id}')">${loggedToday?'اتسجل النهارده ✓':'باضت بيضة النهارده'}</button>
+      </div>
+    </div>`;
+  } else if(p.state==='incubating'){
+    const daysLeft=daysBetween(t, p.expectedHatchDate);
+    const canHatch = t>=p.expectedHatchDate;
+    const totalHatched=(p.hatchLog||[]).reduce((s,h)=>s+h.count,0);
+    actionHtml=`
+    <div class="action-panel" style="background:linear-gradient(135deg,#3F7E86,#2C5A61)">
+      <h4>بتحضن 🐣</h4>
+      <p>${p.eggs.length} بيضة، بدأت الحضانة يوم ${fmtDate(p.incubationStartDate)}. المعاد المتوقع للفقس: <b>${fmtDate(p.expectedHatchDate)}</b></p>
+      ${!canHatch ? `
+        <div class="countdown-ring-wrap">
+          <div class="countdown-num">${daysLeft}</div>
+          <div style="font-size:13px;">يوم متبقي على معاد الفقس المتوقع</div>
+        </div>
+        <button class="btn btn-outline" style="background:#fff;color:#2C5A61;" onclick="if(confirm('تسجيل الحضانة كفاشلة وترجيع الجوز يستريح؟')){cancelIncubation('${p.id}')}">الحضانة فشلت / إلغاء</button>
+      ` : `
+        <p>وصلنا للمعاد المتوقع! ابدأ تسجل كل يوم كام فرخ فقس.</p>
+        ${totalHatched>0?`<div style="font-family:'Lalezar';font-size:22px;">${totalHatched} فرخ فقسوا لحد دلوقتي 🐤</div>`:''}
+        <div class="action-row">
+          <button class="btn btn-gold" onclick="modalLogHatch('${p.id}')">سجل فقس النهارده</button>
+          <button class="btn btn-outline" style="background:#fff;color:#2C5A61;" onclick="if(confirm('تأكيد إن مفيش زغاليل تانية هتفقس؟ هيتقفل الدور ده.')){finishHatching('${p.id}')}">خلصت الفقسة</button>
+        </div>
+      `}
+    </div>`;
+  }
+
+  const eggLog = p.eggs.length? `
+    <div class="card">
+      <div style="font-weight:700;font-size:13.5px;margin-bottom:6px;color:var(--forest);">سجل البيض</div>
+      <div class="log-list">${p.eggs.map((e,i)=>`<div class="log-row"><span>بيضة ${i+1}</span><span>${fmtDate(e.date)}</span></div>`).join('')}</div>
+    </div>`:'';
+
+  const hatchLogHtml = (p.hatchLog&&p.hatchLog.length)? `
+    <div class="card">
+      <div style="font-weight:700;font-size:13.5px;margin-bottom:6px;color:var(--forest);">سجل الفقس</div>
+      <div class="log-list">${p.hatchLog.map(h=>`<div class="log-row"><span>${fmtDate(h.date)}</span><span>${h.count} فرخ</span></div>`).join('')}</div>
+    </div>`:'';
+
+  const historyHtml = p.cycleHistory.length? `
+    <div class="section-title">📜 دورات سابقة</div>
+    <div class="card">
+      <div class="log-list">
+      ${p.cycleHistory.slice().reverse().map(c=>`
+        <div class="log-row"><span>${fmtDate(c.start)} → ${fmtDate(c.end)}</span><span>${c.failed? 'ملهاش نتيجة':`${c.eggs} بيضة، فقس ${c.hatched}`}</span></div>
+      `).join('')}
+      </div>
+    </div>` : '';
+
+  return `
+  <div class="view-fade">
+    <div class="back-row">
+      <button class="back-btn" onclick="go('speciesDetail',{id:'${p.speciesId}'})">→</button>
+      <div><h2>${p.name || 'تفاصيل الجوز'}</h2><div class="sub">${sp?sp.emoji+' '+sp.name:''}</div></div>
+    </div>
+
+    <div class="pair-hero">
+      <div class="hero-photos">
+        ${male ? (male.photo?`<img class="hero-photo two" src="${male.photo}">`:`<div class="hero-photo-ph two" style="margin-right:-20px;">♂️</div>`) : ''}
+        ${female ? (female.photo?`<img class="hero-photo" src="${female.photo}">`:`<div class="hero-photo-ph">♀️</div>`) : ''}
+      </div>
+      <h2>${male?male.name:'—'} 🤍 ${female?female.name:'—'}</h2>
+      <div class="names">
+        ${male?`<a onclick="go('birdDetail',{id:'${male.id}'})" style="text-decoration:underline;">تفاصيل الذكر</a>`:''}
+        ${male&&female?' · ':''}
+        ${female?`<a onclick="go('birdDetail',{id:'${female.id}'})" style="text-decoration:underline;">تفاصيل الأنثى</a>`:''}
+      </div>
+      <span class="state-badge" style="background:${meta.color};font-size:12.5px;">${meta.label}</span>
+    </div>
+
+    ${actionHtml}
+    ${eggLog}
+    ${hatchLogHtml}
+
+    <div class="section-title">🌳 شجرة العيلة</div>
+    <div class="card"><div class="tree-wrap">${renderFamilyTree(p.id)}</div></div>
+
+    ${historyHtml}
+
+    <button class="btn btn-danger btn-block" style="margin-top:18px;" onclick="if(confirm('حذف الجوز ده؟ (مش هيمسح الطيور نفسها)')){deletePair('${p.id}')}">حذف الجوز</button>
+  </div>`;
+}
+
+/* ================= FAMILY TREE ================= */
+function birdChip(b, extra=''){
+  if(!b) return '';
+  return `<button class="tree-child-card ${extra}" onclick="go('birdDetail',{id:'${b.id}'})">
+    ${b.photo?`<img class="tree-mini-photo" src="${b.photo}">`:`<div class="tree-mini-photo-ph">${b.gender==='m'?'♂️':b.gender==='f'?'♀️':'🐤'}</div>`}
+    <span class="nm">${b.name}</span>
+  </button>`;
+}
+function pairBox(p){
+  const male=p.maleId?getBird(p.maleId):null, female=p.femaleId?getBird(p.femaleId):null;
+  return `<button class="tree-pair-box" onclick="go('pairDetail',{id:'${p.id}'})">
+    ${male?(male.photo?`<img class="tree-mini-photo" src="${male.photo}">`:`<div class="tree-mini-photo-ph">♂️</div>`):''}
+    <span class="tree-plus">+</span>
+    ${female?(female.photo?`<img class="tree-mini-photo" src="${female.photo}">`:`<div class="tree-mini-photo-ph">♀️</div>`):''}
+  </button>`;
+}
+function renderFamilyTree(pairId, visited){
+  visited = visited || new Set();
+  if(visited.has(pairId)) return '';
+  visited.add(pairId);
+  const p=getPair(pairId);
+  if(!p) return '';
+  const children = DATA.birds.filter(b=>b.parentPairId===pairId);
+  let childrenHtml='';
+  if(children.length){
+    childrenHtml = `<div class="tree-children" style="--n:${children.length}">
+      ${children.map(c=>{
+        const subPair = c.pairId ? getPair(c.pairId) : null;
+        return `<div class="tree-branch">
+          ${birdChip(c)}
+          ${subPair ? `<div style="margin-top:14px;position:relative;">${renderSubtree(subPair.id, visited)}</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  return `<div class="tree-node">${pairBox(p)}${childrenHtml}</div>`;
+}
+function renderSubtree(pairId, visited){
+  if(visited.has(pairId)) return '';
+  visited.add(pairId);
+  const p=getPair(pairId);
+  if(!p) return '';
+  const children = DATA.birds.filter(b=>b.parentPairId===pairId);
+  let childrenHtml='';
+  if(children.length){
+    childrenHtml = `<div class="tree-children" style="--n:${children.length}">
+      ${children.map(c=>{
+        const subPair = c.pairId ? getPair(c.pairId) : null;
+        return `<div class="tree-branch">
+          ${birdChip(c)}
+          ${subPair ? `<div style="margin-top:14px;">${renderSubtree(subPair.id, visited)}</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  return `<div class="tree-node">${pairBox(p)}${childrenHtml}</div>`;
+}
+
+/* ================= RENDER: BIRD DETAIL ================= */
+function renderBirdDetail(id){
+  const b=getBird(id);
+  if(!b) return `<div class="empty-note">الطائر ده مش موجود</div>`;
+  const sp=getSpecies(b.speciesId);
+  const pair = b.pairId? getPair(b.pairId) : null;
+  const parentPair = b.parentPairId? getPair(b.parentPairId) : null;
+  const gt = b.gender==='m'?'ذكر ♂':b.gender==='f'?'أنثى ♀':'مش متأكد';
+  return `
+  <div class="view-fade">
+    <div class="back-row">
+      <button class="back-btn" onclick="go('speciesDetail',{id:'${b.speciesId}'})">→</button>
+      <div><h2>${b.name}</h2><div class="sub">${sp?sp.emoji+' '+sp.name:''}</div></div>
+    </div>
+
+    <div class="pair-hero">
+      ${b.photo?`<img class="hero-photo" src="${b.photo}">`:`<div class="hero-photo-ph" style="margin:0 auto;">🐦</div>`}
+      <h2>${b.name}</h2>
+      <div class="names">${gt} ${b.color?'· '+b.color:''}</div>
+    </div>
+
+    <div class="card">
+      <div class="link-row"><span>تاريخ الميلاد/الشراء</span><b>${fmtDate(b.birthDate)}</b></div>
+      ${b.price?`<div class="link-row"><span>السعر</span><b>${b.price} جنيه</b></div>`:''}
+      ${b.notes?`<div class="link-row"><span>ملاحظات</span><b>${b.notes}</b></div>`:''}
+      ${pair?`<div class="link-row"><span>متجوز مع</span><button class="btn btn-outline btn-sm" onclick="go('pairDetail',{id:'${pair.id}'})">شوف الجوز</button></div>`:''}
+      ${parentPair?`<div class="link-row"><span>ابن الجوز</span><button class="btn btn-outline btn-sm" onclick="go('pairDetail',{id:'${parentPair.id}'})">شوف الجوز الأصلي</button></div>`:''}
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="modalEditBird('${id}')">تعديل البيانات</button>
+  </div>`;
+}
+
+/* ================= RENDER: FINANCE ================= */
+function renderFinance(){
+  const monthStart=monthStartStr();
+  const monthIncome=txSumSince(monthStart,'income');
+  const monthExpense=txSumSince(monthStart,'expense');
+  const net=monthIncome-monthExpense;
+  const list=DATA.transactions.slice().sort((a,b)=> b.date.localeCompare(a.date)).slice(0,40);
+  return `
+  <div class="view-fade">
+    <div class="back-row">
+      <button class="back-btn" onclick="go('home')">→</button>
+      <div><h2>💰 الفلوس</h2><div class="sub">مصاريف وإيرادات الشهر ده</div></div>
+    </div>
+
+    <div class="money-summary">
+      <div class="money-card" style="background:linear-gradient(135deg,#6B8A5A,#4E6B44)"><b>${monthIncome} ج.م</b><span>إيرادات الشهر</span></div>
+      <div class="money-card" style="background:linear-gradient(135deg,#C4634F,#A24435)"><b>${monthExpense} ج.م</b><span>مصاريف الشهر</span></div>
+      <div class="money-card" style="background:linear-gradient(135deg,#3F7E86,#2C5A61)"><b>${net} ج.م</b><span>الصافي</span></div>
+    </div>
+
+    <button class="btn btn-primary btn-block" style="margin-bottom:18px;" onclick="modalAddTransaction()">+ تسجيل مصروف أو إيراد</button>
+
+    <div class="section-title">📋 آخر الحركات</div>
+    ${list.length? list.map(tx=>`
+      <div class="tx-row">
+        <div>
+          <b>${tx.category}</b>
+          <div class="tx-cat">${fmtDate(tx.date)}${tx.note?' · '+tx.note:''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="tx-amt ${tx.type==='income'?'pos':'neg'}">${tx.type==='income'?'+':'-'}${tx.amount} ج.م</span>
+          <button class="icon-btn" style="width:28px;height:28px;font-size:13px;" onclick="if(confirm('حذف الحركة دي؟')){deleteTransaction('${tx.id}')}">✕</button>
+        </div>
+      </div>
+    `).join('') : `<div class="empty-note">لسه مفيش حركات مسجلة.</div>`}
+  </div>`;
+}
+function modalAddTransaction(){
+  openModal(`
+    <div class="modal-head"><h3>تسجيل حركة</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>النوع</label>
+      <div class="seg" id="txTypeSeg">
+        <button type="button" class="active" data-v="expense" onclick="segPick('txTypeSeg',this);renderTxCats();">مصروف</button>
+        <button type="button" data-v="income" onclick="segPick('txTypeSeg',this);renderTxCats();">إيراد</button>
+      </div>
+    </div>
+    <div class="field"><label>التصنيف</label><div id="txCatWrap"></div></div>
+    <div class="field"><label>المبلغ (ج.م)</label><input type="number" id="txAmount" placeholder="0"></div>
+    <div class="field"><label>التاريخ</label><input type="date" id="txDate" value="${todayStr()}"></div>
+    <div class="field"><label>ملاحظة (اختياري)</label><input type="text" id="txNote" placeholder="أي تفاصيل حلوة تفتكرها"></div>
+    <button class="btn btn-primary btn-block" onclick="submitAddTransaction()">حفظ الحركة</button>
+  `);
+  renderTxCats();
+}
+function renderTxCats(){
+  const type=document.getElementById('txTypeSeg').querySelector('.active').dataset.v;
+  const cats = type==='expense'? EXPENSE_CATS : INCOME_CATS;
+  document.getElementById('txCatWrap').innerHTML = `<div id="txCatPills">${cats.map((c,i)=>`<button type="button" class="cat-pill ${i===0?'active':''}" data-v="${c}" onclick="pickCatPill(this)">${c}</button>`).join('')}</div>`;
+}
+function pickCatPill(btn){
+  btn.parentElement.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+async function submitAddTransaction(){
+  const type=document.getElementById('txTypeSeg').querySelector('.active').dataset.v;
+  const category=document.getElementById('txCatPills').querySelector('.active').dataset.v;
+  const amount=+document.getElementById('txAmount').value||0;
+  const date=document.getElementById('txDate').value||todayStr();
+  const note=document.getElementById('txNote').value.trim();
+  if(amount<=0){ showToast('اكتب مبلغ صحيح'); return; }
+  await addTransaction(type, amount, category, note, date);
+  closeModal(); go('finance');
+}
+
+/* ================= QUICK ADD MENU ================= */
+function openQuickAdd(){
+  openModal(`
+    <div class="modal-head"><h3>إضافة</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <button class="btn btn-primary btn-block" style="margin-bottom:10px;" onclick="closeModal();modalAddSpecies();">+ نوع جديد</button>
+    ${DATA.species.filter(s=>s.type!=='production').length? `
+    <button class="btn btn-clay btn-block" style="margin-bottom:10px;" onclick="closeModal();openPickSpeciesFor('bird');">+ طائر جديد</button>
+    <button class="btn btn-sky btn-block" style="margin-bottom:10px;" onclick="closeModal();openPickSpeciesFor('pair');">+ جوز جديد</button>
+    ` : ''}
+    <button class="btn btn-gold btn-block" onclick="closeModal();modalAddTransaction();">+ مصروف / إيراد</button>
+    ${!DATA.species.length? `<div class="empty-note" style="margin-top:10px;">ضيف نوع الأول عشان تقدر تضيف طيور وأزواج</div>`:''}
+  `);
+}
+function openPickSpeciesFor(kind){
+  openModal(`
+    <div class="modal-head"><h3>اختار النوع</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    ${DATA.species.filter(s=>s.type!=='production').map(s=>`<button class="btn btn-outline btn-block" style="margin-bottom:8px;" onclick="closeModal();${kind==='bird'?`modalAddBird('${s.id}')`:`modalAddPair('${s.id}')`}">${s.emoji} ${s.name}</button>`).join('')}
+  `);
+}
+
+/* ================= BOTTOM NAV ================= */
+function renderBottomNav(){
+  const home = ROUTE.view==='home';
+  const species = ROUTE.view==='speciesList'||ROUTE.view==='speciesDetail'||ROUTE.view==='pairDetail'||ROUTE.view==='birdDetail';
+  const finance = ROUTE.view==='finance';
+  return `
+  <div class="bottom-nav">
+    <button class="nav-item ${home?'active':''}" onclick="go('home')"><span class="ic">🏠</span>الرئيسية</button>
+    <button class="nav-item ${species?'active':''}" onclick="go('speciesList')"><span class="ic">🐦</span>الأنواع</button>
+    <button class="nav-item" onclick="openQuickAdd()"><span class="ic">➕</span>إضافة</button>
+    <button class="nav-item ${finance?'active':''}" onclick="go('finance')"><span class="ic">💰</span>الفلوس</button>
+  </div>`;
+}
+
+/* ================= MAIN RENDER ================= */
+function render(){
+  let html='';
+  if(ROUTE.view==='home') html=renderHome();
+  else if(ROUTE.view==='speciesList') html=renderSpeciesList();
+  else if(ROUTE.view==='speciesDetail') html=renderSpeciesDetail(ROUTE.params.id, ROUTE.params.tab);
+  else if(ROUTE.view==='pairDetail') html=renderPairDetail(ROUTE.params.id);
+  else if(ROUTE.view==='birdDetail') html=renderBirdDetail(ROUTE.params.id);
+  else if(ROUTE.view==='finance') html=renderFinance();
+  document.getElementById('app').innerHTML = html + renderBottomNav();
+}
+
+/* ================= INIT ================= */
+(async function init(){
+  await loadData();
+  render();
+})();
+</script>
+</body>
+</html>
