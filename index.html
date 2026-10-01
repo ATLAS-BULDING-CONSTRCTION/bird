@@ -347,6 +347,32 @@
   .tx-amt.neg{color:var(--clay);}
   .cat-pill{display:inline-block;background:var(--surface-2);border-radius:10px;padding:2px 9px;font-size:11px;margin:3px 4px 0 0;}
   .cat-pill.active{background:var(--forest);color:#fff;}
+
+  /* ===== vitamins ===== */
+  .vit-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .vit-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:520px;}
+  .vit-table th{font-weight:700;color:var(--forest);padding:8px 4px;text-align:center;border-bottom:1.5px solid var(--line);white-space:nowrap;}
+  .vit-table th.today{background:var(--gold);color:#2b1c05;border-radius:10px 10px 0 0;}
+  .vit-table td{padding:6px 4px;text-align:center;border-bottom:1px dashed var(--line);}
+  .vit-table td.today{background:#FBF1D6;}
+  .vit-table td.name{text-align:right;font-weight:700;white-space:nowrap;padding-right:2px;}
+  .vit-cell{width:36px;height:36px;border-radius:50%;font-size:16px;background:var(--surface-2);}
+  .vit-cell.done{background:var(--moss);color:#fff;font-weight:800;}
+  .vit-cell.off{display:inline-block;line-height:36px;background:none;color:var(--line);}
+  .vit-cell.future{opacity:.45;}
+  #vitDays .cat-pill{padding:8px 14px;font-size:13px;margin:4px 0 0 6px;}
+
+  /* ===== iPad / tablet ===== */
+  button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+  @media(min-width:768px){
+    #app{max-width:860px;padding:28px 28px 110px;}
+    .species-grid{grid-template-columns:repeat(3,1fr);}
+    .bottom-nav{display:flex;left:50%;right:auto;transform:translateX(-50%);width:100%;max-width:860px;border-radius:22px 22px 0 0;}
+    .nav-item{font-size:13px;padding:8px 0;}
+    .nav-item .ic{font-size:24px;}
+    .overlay{align-items:center;}
+    .modal{max-width:560px;border-radius:24px;}
+  }
 </style>
 </head>
 <body>
@@ -442,6 +468,13 @@ function getTodayTasks(){
         tasks.push({type:'hatch', pair:p, label:`${p.name||'زوج'} — كام فرخ فقس النهارده؟`});
       }
     }
+  });
+  DATA.pairs.forEach(p=>{
+    (p.vitamins||[]).forEach(v=>{
+      if(v.days.includes(dayOfWeek(t)) && !vitIsDone(p,v,t)){
+        tasks.push({type:'vit', pair:p, vit:v, label:`💊 ${p.name||'زوج'} — ${v.name}`});
+      }
+    });
   });
   DATA.species.forEach(sp=>{
     if(sp.type==='production'){
@@ -576,6 +609,71 @@ async function deleteSpecies(id){
   DATA.birds=DATA.birds.filter(b=>b.speciesId!==id);
   DATA.species=DATA.species.filter(s=>s.id!==id);
   await saveData(); go('speciesList');
+}
+
+/* ================= VITAMINS ================= */
+const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const WEEK_ORDER=[6,0,1,2,3,4,5]; // السبت أول الأسبوع
+function dayOfWeek(dateStr){ return new Date(dateStr+'T12:00:00').getDay(); }
+function addDaysSafe(dateStr,n){ const d=new Date(dateStr+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function vitIsDone(p,v,date){ return !!(p.vitDone && p.vitDone[date+'|'+v.id]); }
+async function addVitamin(pairId,name,days){
+  const p=getPair(pairId); p.vitamins=p.vitamins||[];
+  p.vitamins.push({id:uid(),name,days});
+  await saveData();
+}
+async function deleteVitamin(pairId,vitId){
+  const p=getPair(pairId);
+  p.vitamins=(p.vitamins||[]).filter(v=>v.id!==vitId);
+  await saveData(); render();
+}
+async function toggleVitDone(pairId,vitId,date){
+  const p=getPair(pairId); date=date||todayStr();
+  p.vitDone=p.vitDone||{}; const k=date+'|'+vitId;
+  if(p.vitDone[k]){ delete p.vitDone[k]; } else { p.vitDone[k]=true; showToast('تمام، اتسجل ✓'); }
+  await saveData(); render();
+}
+function modalAddVitamin(pairId){
+  openModal(`
+    <div class="modal-head"><h3>إضافة فيتامين</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>اسم الفيتامين</label><input type="text" id="vitName" placeholder="مثلاً: فيتامين E, كالسيوم, مالتي فيتامين..."></div>
+    <div class="field"><label>الأيام</label>
+      <div id="vitDays">${WEEK_ORDER.map(d=>`<button type="button" class="cat-pill" data-v="${d}" onclick="this.classList.toggle('active')">${DAY_NAMES[d]}</button>`).join('')}</div>
+      <div style="margin-top:8px;"><button type="button" class="btn btn-outline btn-sm" onclick="document.querySelectorAll('#vitDays .cat-pill').forEach(b=>b.classList.add('active'))">كل الأيام</button></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="submitAddVitamin('${pairId}')">حفظ</button>
+  `);
+}
+async function submitAddVitamin(pairId){
+  const name=document.getElementById('vitName').value.trim();
+  const days=[...document.querySelectorAll('#vitDays .cat-pill.active')].map(b=>+b.dataset.v);
+  if(!name){ showToast('اكتب اسم الفيتامين'); return; }
+  if(!days.length){ showToast('اختار يوم واحد على الأقل'); return; }
+  await addVitamin(pairId,name,days);
+  closeModal(); render();
+}
+function renderVitaminCard(p){
+  const vits=p.vitamins||[], t=todayStr();
+  const wk=addDaysSafe(t,-((dayOfWeek(t)+1)%7));
+  const dates=WEEK_ORDER.map((d,i)=>addDaysSafe(wk,i));
+  return `
+  <div class="section-title">💊 جدول الفيتامينات</div>
+  <div class="card">
+    ${vits.length? `<div class="vit-wrap"><table class="vit-table">
+      <thead><tr><th></th>${WEEK_ORDER.map((d,i)=>`<th class="${dates[i]===t?'today':''}">${DAY_NAMES[d]}</th>`).join('')}<th></th></tr></thead>
+      <tbody>${vits.map(v=>`<tr>
+        <td class="name">${v.name}</td>
+        ${WEEK_ORDER.map((d,i)=>{
+          const date=dates[i], cls=date===t?'today':'';
+          if(!v.days.includes(d)) return `<td class="${cls}"><span class="vit-cell off">·</span></td>`;
+          const done=vitIsDone(p,v,date), fut=date>t;
+          return `<td class="${cls}"><button class="vit-cell ${done?'done':''} ${fut?'future':''}" ${fut?'disabled':''} onclick="toggleVitDone('${p.id}','${v.id}','${date}')">${done?'✓':'💊'}</button></td>`;
+        }).join('')}
+        <td><button class="icon-btn" style="width:28px;height:28px;font-size:13px;" onclick="if(confirm('حذف الفيتامين ده؟')){deleteVitamin('${p.id}','${v.id}')}">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table></div>` : `<div class="empty-note">لسه مفيش فيتامينات للجوز ده.</div>`}
+    <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="modalAddVitamin('${p.id}')">+ إضافة فيتامين</button>
+  </div>`;
 }
 
 /* ================= MODAL SYSTEM ================= */
@@ -760,7 +858,8 @@ function renderHome(){
       ${tasks.map(t=>`
         <div class="task-item">
           <span>${t.label}</span>
-          ${t.type==='egg' ? `<button onclick="quickEggAnswer('${t.pair.id}')">جاوب</button>`
+          ${t.type==='vit' ? `<button onclick="toggleVitDone('${t.pair.id}','${t.vit.id}')">تم ✓</button>`
+            : t.type==='egg' ? `<button onclick="quickEggAnswer('${t.pair.id}')">جاوب</button>`
             : t.type==='quail' ? `<button onclick="modalLogQuail('${t.sp.id}', 0)">سجل</button>`
             : `<button onclick="go('pairDetail',{id:'${t.pair.id}'})">سجل</button>`}
         </div>`).join('')}
@@ -1042,6 +1141,7 @@ function renderPairDetail(id){
     ${actionHtml}
     ${eggLog}
     ${hatchLogHtml}
+    ${renderVitaminCard(p)}
 
     <div class="section-title">🌳 شجرة العيلة</div>
     <div class="card"><div class="tree-wrap">${renderFamilyTree(p.id)}</div></div>
