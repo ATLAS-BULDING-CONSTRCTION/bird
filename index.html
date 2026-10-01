@@ -386,16 +386,24 @@ const EXPENSE_CATS = ['أكل','دواء وعلاج','شراء طيور','معد
 const INCOME_CATS = ['بيع طيور','بيع بيض','إيراد تاني'];
 let loaded = false;
 
+async function storageGet(k){
+  if(window.storage){ const r=await window.storage.get(k,false); return r&&r.value; }
+  return localStorage.getItem(k);
+}
+async function storageSet(k,v){
+  if(window.storage){ await window.storage.set(k,v,false); return; }
+  localStorage.setItem(k,v);
+}
 async function loadData(){
   try{
-    const res = await window.storage.get(DATA_KEY, false);
-    if(res && res.value){ DATA = Object.assign({species:[],birds:[],pairs:[],transactions:[]}, JSON.parse(res.value)); }
+    const val = await storageGet(DATA_KEY);
+    if(val){ DATA = Object.assign({species:[],birds:[],pairs:[],transactions:[]}, JSON.parse(val)); }
   }catch(e){ /* no data yet */ }
   loaded = true;
 }
 let saveTimer=null;
 async function saveData(){
-  try{ await window.storage.set(DATA_KEY, JSON.stringify(DATA), false); }
+  try{ await storageSet(DATA_KEY, JSON.stringify(DATA)); }
   catch(e){ console.error('save failed', e); showToast('في مشكلة في الحفظ، حاول تاني'); }
 }
 
